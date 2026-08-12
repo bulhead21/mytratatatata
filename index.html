@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Удостоверение личности</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: #F2F2F7;
+      color: #000000;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 430px;
+      background-color: #F2F2F7;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-top: env(safe-area-inset-top, 20px);
+      padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 16px);
+      padding-left: 16px;
+      padding-right: 16px;
+      overflow: hidden;
+    }
+
+    /* --- HEADER --- */
+    .header {
+      display: grid;
+      grid-template-columns: 40px 1fr 40px;
+      align-items: center;
+      height: 44px;
+      margin-bottom: 12px;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      color: #1C1C1E;
+    }
+
+    .title {
+      font-size: 17px;
+      font-weight: 600;
+      text-align: center;
+      color: #1C1C1E;
+    }
+
+    /* --- SEGMENTED CONTROL --- */
+    .segmented-control {
+      background-color: #E3E3E8;
+      border-radius: 9px;
+      padding: 2px;
+      display: flex;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .tab-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 7px 0;
+      font-size: 14px;
+      font-weight: 500;
+      color: #3C3C43;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: color 0.25s ease, font-weight 0.25s ease;
+      position: relative;
+      z-index: 2;
+    }
+
+    .tab-btn.active {
+      color: #000000;
+      font-weight: 600;
+    }
+
+    /* Белый подсвечивающийся фоновый ползунок */
+    .tab-slider-bg {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: calc(50% - 2px);
+      height: calc(100% - 4px);
+      background-color: #FFFFFF;
+      border-radius: 7px;
+      box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.12), 0px 3px 1px rgba(0, 0, 0, 0.04);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1;
+    }
+
+    /* --- SLIDER AREA (АНИМАЦИЯ СЛАЙДА) --- */
+    .slider-viewport {
+      width: 100%;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .slider-track {
+      display: flex;
+      width: 200%;
+      height: 100%;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .slide {
+      width: 50%;
+      flex-shrink: 0;
+    }
+
+    /* --- ВКЛАДКА 1: ДОКУМЕНТ --- */
+    .document-card {
+      background: #FFFFFF;
+      border-radius: 18px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+    }
+
+    .doc-side-label {
+      font-size: 13px;
+      color: #8E8E93;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    .doc-img {
+      width: 100%;
+      border-radius: 12px;
+      display: block;
+      object-fit: cover;
+      border: 1px solid #E5E5EA;
+    }
+
+    /* --- ВКЛАДКА 2: РЕКВИЗИТЫ --- */
+    .details-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 4px 4px 20px 4px;
+    }
+
+    .detail-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .detail-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .detail-label {
+      font-size: 13px;
+      color: #8E8E93;
+    }
+
+    .detail-value {
+      font-size: 17px;
+      font-weight: 500;
+      color: #1C1C1E;
+    }
+
+    .copy-btn {
+      background: none;
+      border: none;
+      padding: 8px;
+      margin-right: -8px;
+      cursor: pointer;
+      color: #8E8E93;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.15s ease, color 0.2s ease;
+    }
+
+    .copy-btn:active {
+      opacity: 0.5;
+    }
+
+    /* --- FOOTER BUTTONS WITH SLIDE --- */
+    .footer-viewport {
+      width: 100%;
+      overflow: hidden;
+      margin-top: 16px;
+    }
+
+    .footer-track {
+      display: flex;
+      width: 200%;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .footer-slide {
+      width: 50%;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-right: 0;
+    }
+
+    .btn {
+      width: 100%;
+      height: 50px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.15s ease;
+    }
+
+    .btn:active {
+      opacity: 0.8;
+    }
+
+    .btn-primary {
+      background-color: #0056C6;
+      color: #FFFFFF;
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      color: #0056C6;
+      border: 1px solid #C6C6C8;
+    }
+
+    /* Toast уведомление о скопированном тексте */
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 100;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Шапка -->
+    <header class="header">
+      <button class="back-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+      <h1 class="title">Удостоверение личности</h1>
+      <div></div>
+    </header>
+
+    <!-- Переключатель с плавающим фоном -->
+    <div class="segmented-control">
+      <div class="tab-slider-bg" id="tabBg"></div>
+      <button class="tab-btn active" onclick="setTab(0)">Документ</button>
+      <button class="tab-btn" onclick="setTab(1)">Реквизиты</button>
+    </div>
+
+    <!-- Область контента со слайдером -->
+    <div class="slider-viewport">
+      <div class="slider-track" id="sliderTrack">
+        
+        <!-- Слайд 1: Документ -->
+        <div class="slide">
+          <div class="document-card">
+            <div>
+              <div class="doc-side-label">Лицевая сторона</div>
+              <img src="https://via.placeholder.com/600x380/e2e8f0/475569?text=Лицевая+сторона" alt="Лицевая сторона" class="doc-img">
+            </div>
+            <div>
+              <div class="doc-side-label">Оборотная сторона</div>
+              <img src="https://via.placeholder.com/600x380/e2e8f0/475569?text=Оборотная+сторона" alt="Оборотная сторона" class="doc-img">
+            </div>
+          </div>
+        </div>
+
+        <!-- Слайд 2: Реквизиты -->
+        <div class="slide">
+          <div class="details-list">
+            
+            <div class="detail-item">
+              <div class="detail-info">
+                <span class="detail-label">ФИО</span>
+                <span class="detail-value" id="val-fio">Енилеев Максим Ильдарович</span>
+              </div>
+              <button class="copy-btn" onclick="copyValue('val-fio')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              </button>
+            </div>
+
+            <div class="detail-item">
+              <div class="detail-info">
+                <span class="detail-label">ИИН</span>
+                <span class="detail-value" id="val-iin">080123554342</span>
+              </div>
+              <button class="copy-btn" onclick="copyValue('val-iin')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              </button>
+            </div>
+
+            <div class="detail-item">
+              <div class="detail-info">
+                <span class="detail-label">Дата рождения</span>
+                <span class="detail-value" id="val-dob">23.01.2008</span>
+              </div>
+              <button class="copy-btn" onclick="copyValue('val-dob')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              </button>
+            </div>
+
+            <div class="detail-item">
+              <div class="detail-info">
+                <span class="detail-label">Номер документа</span>
+                <span class="detail-value" id="val-docnum">055661569</span>
+              </div>
+              <button class="copy-btn" onclick="copyValue('val-docnum')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              </button>
+            </div>
+
+            <div class="detail-item">
+              <div class="detail-info">
+                <span class="detail-label">Дата выдачи</span>
+                <span class="detail-value" id="val-issued">14.02.2024</span>
+              </div>
+              <button class="copy-btn" onclick="copyValue('val-issued')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              </button>
+            </div>
+
+            <div class="detail-item">
+              <div class="detail-info">
+                <span class="detail-label">Срок действия</span>
+                <span class="detail-value" id="val-expiry">13.02.2034</span>
+              </div>
+              <button class="copy-btn" onclick="copyValue('val-expiry')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Нижние кнопки со слайдом -->
+    <div class="footer-viewport">
+      <div class="footer-track" id="footerTrack">
+        
+        <!-- Кнопки для "Документ" -->
+        <div class="footer-slide">
+          <button class="btn btn-primary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            Предъявить документ
+          </button>
+          <button class="btn btn-secondary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+            Отправить документ
+          </button>
+        </div>
+
+        <!-- Кнопка для "Реквизиты" -->
+        <div class="footer-slide">
+          <button class="btn btn-secondary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+            Отправить реквизиты
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div class="toast" id="toast">Скопировано</div>
+
+  <script>
+    function setTab(index) {
+      // Двигаем фоновый бегунок табов
+      const tabBg = document.getElementById('tabBg');
+      tabBg.style.transform = `translateX(${index * 100}%)`;
+
+      // Переключаем активные классы кнопок
+      const buttons = document.querySelectorAll('.tab-btn');
+      buttons.forEach((btn, i) => {
+        btn.classList.toggle('active', i === index);
+      });
+
+      // Передвигаем основной контент
+      const sliderTrack = document.getElementById('sliderTrack');
+      sliderTrack.style.transform = `translateX(-${index * 50}%)`;
+
+      // Передвигаем кнопки футера
+      const footerTrack = document.getElementById('footerTrack');
+      footerTrack.style.transform = `translateX(-${index * 50}%)`;
+    }
+
+    // Функция копирования в буфер обмена
+    function copyValue(elementId) {
+      const text = document.getElementById(elementId).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Скопировано');
+      }).catch(err => {
+        showToast('Ошибка копирования');
+      });
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 1500);
+    }
+  </script>
+</body>
+</html>
