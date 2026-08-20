@@ -12,7 +12,6 @@
   <link rel="apple-touch-icon" href="image.png">
   <link rel="icon" href="image.png" type="image/png">
   <link rel="manifest" href='data:application/manifest+json,{"name":"Удостоверение личности","short_name":"Документы","start_url":".","display":"standalone","background_color":"#F2F2F7","theme_color":"#F2F2F7","icons":[{"src":"image.png","sizes":"512x512","type":"image/png"}]}'>
-  <link rel="manifest" href='data:application/manifest+json,{"name":"Удостоверение личности","short_name":"Документы","start_url":".","display":"standalone","background_color":"#F2F2F7","theme_color":"#F2F2F7"}'>
 
   <title>Удостоверение личности</title>
   
@@ -50,7 +49,6 @@
       justify-content: center;
     }
 
-    /* Главный контейнер */
     .app-container {
       width: 100%;
       max-width: 28rem;
@@ -61,7 +59,6 @@
       overflow: hidden;
     }
 
-    /* Шапка */
     .header {
       display: flex;
       align-items: center;
@@ -92,7 +89,6 @@
       width: 2.2rem;
     }
 
-    /* Табы */
     .segmented-control {
       position: relative;
       background-color: #E3E3E8;
@@ -136,7 +132,6 @@
       font-weight: 600;
     }
 
-    /* ОСНОВНАЯ ЗОНА СЛАЙДЕРА КОНТЕНТА */
     .content-viewport {
       width: 100%;
       flex: 1;
@@ -163,7 +158,6 @@
       padding-bottom: 0.5rem;
     }
 
-    /* Вкладка 1: Карточки Документов */
     .document-card {
       background: var(--card-bg);
       border-radius: 1.1rem;
@@ -207,6 +201,13 @@
       display: none;
     }
 
+    /* Убирает значок [?] в Safari */
+    .doc-preview img:not([src]), 
+    .doc-preview img[src=""],
+    .doc-preview img[src="about:blank"] {
+      display: none !important;
+    }
+
     .doc-placeholder {
       display: flex;
       flex-direction: column;
@@ -220,7 +221,6 @@
       display: none;
     }
 
-    /* Вкладка 2: Реквизиты (Стилизованные поля ввода) */
     .details-list {
       display: flex;
       flex-direction: column;
@@ -279,7 +279,6 @@
       opacity: 0.4;
     }
 
-    /* ЗОНА СЛАЙДЕРА НИЖНИХ КНОПОК */
     .footer-viewport {
       width: 100%;
       overflow: hidden;
@@ -336,7 +335,6 @@
       border: 1px solid #C6C6C8;
     }
 
-    /* Toast скопированного текста */
     .toast {
       position: fixed;
       bottom: 5rem;
@@ -386,7 +384,7 @@
           <div class="document-card">
             
             <div class="doc-side">
-              
+              <span class="doc-side-label">Лицевая сторона</span>
               <div class="doc-preview" onclick="triggerFile('file-front')">
                 <div class="doc-placeholder" id="ph-front">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
@@ -398,7 +396,7 @@
             </div>
 
             <div class="doc-side">
-              
+              <span class="doc-side-label">Оборотная сторона</span>
               <div class="doc-preview" onclick="triggerFile('file-back')">
                 <div class="doc-placeholder" id="ph-back">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
@@ -418,7 +416,7 @@
             <div class="detail-item">
               <div class="detail-info">
                 <span class="detail-label">ФИО</span>
-                <input class="detail-input" id="val-fio" type="text" oninput="saveDetail('fio', this.value)">
+                <input class="detail-input" id="val-fio" type="text" spellcheck="false" autocorrect="off" autocomplete="off" oninput="saveDetail('fio', this.value)">
               </div>
               <button class="copy-btn" onclick="copyValue('val-fio')">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
@@ -428,7 +426,7 @@
             <div class="detail-item">
               <div class="detail-info">
                 <span class="detail-label">ИИН</span>
-                <input class="detail-input" id="val-iin" type="text" oninput="saveDetail('iin', this.value)">
+                <input class="detail-input" id="val-iin" type="text" spellcheck="false" autocorrect="off" autocomplete="off" oninput="saveDetail('iin', this.value)">
               </div>
               <button class="copy-btn" onclick="copyValue('val-iin')">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
@@ -438,7 +436,7 @@
             <div class="detail-item">
               <div class="detail-info">
                 <span class="detail-label">Дата рождения</span>
-                <input class="detail-input" id="val-dob" type="text" oninput="saveDetail('dob', this.value)">
+                <input class="detail-input" id="val-dob" type="text" spellcheck="false" autocorrect="off" autocomplete="off" oninput="saveDetail('dob', this.value)">
               </div>
               <button class="copy-btn" onclick="copyValue('val-dob')">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
@@ -448,7 +446,7 @@
             <div class="detail-item">
               <div class="detail-info">
                 <span class="detail-label">Номер документа</span>
-                <input class="detail-input" id="val-docnum" type="text" oninput="saveDetail('docnum', this.value)">
+                <input class="detail-input" id="val-docnum" type="text" spellcheck="false" autocorrect="off" autocomplete="off" oninput="saveDetail('docnum', this.value)">
               </div>
               <button class="copy-btn" onclick="copyValue('val-docnum')">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
@@ -458,7 +456,7 @@
             <div class="detail-item">
               <div class="detail-info">
                 <span class="detail-label">Дата выдачи</span>
-                <input class="detail-input" id="val-issued" type="text" oninput="saveDetail('issued', this.value)">
+                <input class="detail-input" id="val-issued" type="text" spellcheck="false" autocorrect="off" autocomplete="off" oninput="saveDetail('issued', this.value)">
               </div>
               <button class="copy-btn" onclick="copyValue('val-issued')">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
@@ -468,7 +466,7 @@
             <div class="detail-item">
               <div class="detail-info">
                 <span class="detail-label">Срок действия</span>
-                <input class="detail-input" id="val-expiry" type="text" oninput="saveDetail('expiry', this.value)">
+                <input class="detail-input" id="val-expiry" type="text" spellcheck="false" autocorrect="off" autocomplete="off" oninput="saveDetail('expiry', this.value)">
               </div>
               <button class="copy-btn" onclick="copyValue('val-expiry')">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
@@ -510,7 +508,6 @@
   <div class="toast" id="toast">Скопировано</div>
 
   <script>
-    // Стандартные реквизиты по умолчанию
     const defaultDetails = {
       fio: 'Енилеев Максим Ильдарович',
       iin: '080123554342',
@@ -520,12 +517,10 @@
       expiry: '13.02.2034'
     };
 
-    // Сохранение отредактированного реквизита
     function saveDetail(key, value) {
       localStorage.setItem(`doc_detail_${key}`, value);
     }
 
-    // Загрузка реквизитов из памяти браузера
     function loadDetails() {
       Object.keys(defaultDetails).forEach(key => {
         const savedValue = localStorage.getItem(`doc_detail_${key}`);
@@ -536,7 +531,6 @@
       });
     }
 
-    // Плавный сдвиг слайдера
     function switchTab(index) {
       document.getElementById('sliderPill').style.transform = `translate3d(${index * 100}%, 0, 0)`;
       document.getElementById('contentTrack').style.transform = `translate3d(-${index * 50}%, 0, 0)`;
@@ -550,7 +544,6 @@
       document.getElementById(id).click();
     }
 
-    // Обработка и сжатие изображений для гарантированного сохранения
     function processAndSaveImage(e, side) {
       const file = e.target.files[0];
       if (!file) return;
@@ -583,21 +576,19 @@
       reader.readAsDataURL(file);
     }
 
-    // Отображение фото
     function displayImage(side, src) {
       const img = document.getElementById(`img-${side}`);
       const ph = document.getElementById(`ph-${side}`);
-      img.src = src;
-      img.style.display = 'block';
-      ph.style.display = 'none';
+      if (src) {
+        img.src = src;
+        img.style.display = 'block';
+        ph.style.display = 'none';
+      }
     }
 
-    // Первичная загрузка данных при открытии веб-приложения
     window.addEventListener('load', () => {
-      // 1. Загружаем сохраненные реквизиты
       loadDetails();
 
-      // 2. Загружаем сохраненные фото
       const savedFront = localStorage.getItem('doc_img_front');
       const savedBack = localStorage.getItem('doc_img_back');
 
@@ -605,7 +596,6 @@
       if (savedBack) displayImage('back', savedBack);
     });
 
-    // Копирование введенного текста
     function copyValue(id) {
       const inputElem = document.getElementById(id);
       if (inputElem) {
