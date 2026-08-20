@@ -9,7 +9,9 @@
   <meta name="apple-mobile-web-app-title" content="Удостоверение">
   <meta name="mobile-web-app-capable" content="yes">
   
-  <link rel="apple-touch-icon" href="app-icon.png">
+  <link rel="apple-touch-icon" href="image.png">
+  <link rel="icon" href="image.png" type="image/png">
+  <link rel="manifest" href='data:application/manifest+json,{"name":"Удостоверение личности","short_name":"Документы","start_url":".","display":"standalone","background_color":"#F2F2F7","theme_color":"#F2F2F7","icons":[{"src":"image.png","sizes":"512x512","type":"image/png"}]}'>
   <link rel="manifest" href='data:application/manifest+json,{"name":"Удостоверение личности","short_name":"Документы","start_url":".","display":"standalone","background_color":"#F2F2F7","theme_color":"#F2F2F7"}'>
 
   <title>Удостоверение личности</title>
@@ -384,7 +386,7 @@
           <div class="document-card">
             
             <div class="doc-side">
-              <span class="doc-side-label">Лицевая сторона</span>
+              
               <div class="doc-preview" onclick="triggerFile('file-front')">
                 <div class="doc-placeholder" id="ph-front">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
@@ -396,7 +398,7 @@
             </div>
 
             <div class="doc-side">
-              <span class="doc-side-label">Оборотная сторона</span>
+              
               <div class="doc-preview" onclick="triggerFile('file-back')">
                 <div class="doc-placeholder" id="ph-back">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
