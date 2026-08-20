@@ -22,7 +22,8 @@
       --text-main: #1C1C1E;
       --text-muted: #8E8E93;
       --border: #E5E5EA;
-      --ease-ios: cubic-bezier(0.16, 1, 0.3, 1);
+      /* Улучшенная плавная кривая анимации iOS */
+      --ease-smooth: cubic-bezier(0.2, 0.8, 0.2, 1);
     }
 
     * {
@@ -40,7 +41,7 @@
       height: 100dvh;
       background-color: var(--bg);
       color: var(--text-main);
-      overflow: hidden; /* Фиксирует экраны от лишней прокрутки */
+      overflow: hidden;
     }
 
     body {
@@ -90,7 +91,7 @@
       width: 2.2rem;
     }
 
-    /* Переключатель Табов со скользящей белой плашкой */
+    /* Переключатель Табов с ультра-плавной белой плашкой */
     .segmented-control {
       position: relative;
       background-color: #E3E3E8;
@@ -110,7 +111,8 @@
       background: #FFFFFF;
       border-radius: 0.5rem;
       box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.1);
-      transition: transform 0.35s var(--ease-ios);
+      transition: transform 0.45s var(--ease-smooth);
+      will-change: transform;
       z-index: 1;
     }
 
@@ -120,12 +122,12 @@
       z-index: 2;
       border: none;
       background: transparent;
-      padding: 0.5rem 0;
+      padding: 0.55rem 0;
       font-size: 0.9rem;
       font-weight: 500;
       color: #3C3C43;
       cursor: pointer;
-      transition: color 0.25s, font-weight 0.25s;
+      transition: color 0.3s ease, font-weight 0.3s ease;
     }
 
     .tab-btn.active {
@@ -145,8 +147,10 @@
       display: flex;
       width: 200%;
       height: 100%;
-      transition: transform 0.35s var(--ease-ios);
+      transition: transform 0.45s var(--ease-smooth);
       will-change: transform;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
 
     .panel {
@@ -200,6 +204,23 @@
       height: 100%;
       object-fit: cover;
       display: none;
+    }
+
+    .delete-img-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: rgba(0, 0, 0, 0.6);
+      color: #FFFFFF;
+      border: none;
+      width: 1.6rem;
+      height: 1.6rem;
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
     }
 
     .doc-placeholder {
@@ -272,8 +293,10 @@
     .footer-track {
       display: flex;
       width: 200%;
-      transition: transform 0.35s var(--ease-ios);
+      transition: transform 0.45s var(--ease-smooth);
       will-change: transform;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
     }
 
     .footer-panel {
@@ -373,7 +396,8 @@
                   <span>Нажмите для выбора фото</span>
                 </div>
                 <img id="img-front" alt="Лицевая сторона">
-                <input type="file" id="file-front" class="file-input" accept="image/*" onchange="uploadImage(event, 'img-front', 'ph-front')">
+                <button class="delete-img-btn" id="del-front" onclick="removeImage(event, 'front')">✕</button>
+                <input type="file" id="file-front" class="file-input" accept="image/*" onchange="uploadImage(event, 'front')">
               </div>
             </div>
 
@@ -385,7 +409,8 @@
                   <span>Нажмите для выбора фото</span>
                 </div>
                 <img id="img-back" alt="Оборотная сторона">
-                <input type="file" id="file-back" class="file-input" accept="image/*" onchange="uploadImage(event, 'img-back', 'ph-back')">
+                <button class="delete-img-btn" id="del-back" onclick="removeImage(event, 'back')">✕</button>
+                <input type="file" id="file-back" class="file-input" accept="image/*" onchange="uploadImage(event, 'back')">
               </div>
             </div>
 
@@ -490,40 +515,75 @@
   <div class="toast" id="toast">Скопировано</div>
 
   <script>
-    // Переключение вкладок со сдвигом 
+    // Плавное переключение вкладок (3D Transform для максимальной плавности)
     function switchTab(index) {
-      // 1. Двигаем плашку табов
-      document.getElementById('sliderPill').style.transform = `translateX(${index * 100}%)`;
+      document.getElementById('sliderPill').style.transform = `translate3d(${index * 100}%, 0, 0)`;
+      document.getElementById('contentTrack').style.transform = `translate3d(-${index * 50}%, 0, 0)`;
+      document.getElementById('footerTrack').style.transform = `translate3d(-${index * 50}%, 0, 0)`;
 
-      // 2. Двигаем основной контент
-      document.getElementById('contentTrack').style.transform = `translateX(-${index * 50}%)`;
-
-      // 3. Двигаем нижние кнопки
-      document.getElementById('footerTrack').style.transform = `translateX(-${index * 50}%)`;
-
-      // 4. Меняем стили активной кнопки
       document.getElementById('btn-doc').classList.toggle('active', index === 0);
       document.getElementById('btn-details').classList.toggle('active', index === 1);
     }
 
-    // Загрузка фото в карточки
+    // Вызов окна выбора файла
     function triggerFile(id) {
       document.getElementById(id).click();
     }
 
-    function uploadImage(e, imgId, phId) {
+    // Загрузка фото и СОХРАНЕНИЕ в LocalStorage
+    function uploadImage(e, side) {
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = function(evt) {
-          const img = document.getElementById(imgId);
-          img.src = evt.target.result;
-          img.style.display = 'block';
-          document.getElementById(phId).style.display = 'none';
+          const base64Data = evt.target.result;
+          
+          // Сохраняем в память браузера
+          localStorage.setItem(`doc_img_${side}`, base64Data);
+          
+          // Отрисовываем
+          displayImage(side, base64Data);
         };
         reader.readAsDataURL(file);
       }
     }
+
+    // Отрисовка изображения
+    function displayImage(side, src) {
+      const img = document.getElementById(`img-${side}`);
+      const ph = document.getElementById(`ph-${side}`);
+      const delBtn = document.getElementById(`del-${side}`);
+      
+      img.src = src;
+      img.style.display = 'block';
+      ph.style.display = 'none';
+      delBtn.style.display = 'flex';
+    }
+
+    // Удаление изображения из памяти
+    function removeImage(event, side) {
+      event.stopPropagation(); // Предотвращаем открытие выбора файла
+      localStorage.removeItem(`doc_img_${side}`);
+
+      const img = document.getElementById(`img-${side}`);
+      const ph = document.getElementById(`ph-${side}`);
+      const delBtn = document.getElementById(`del-${side}`);
+
+      img.src = '';
+      img.style.display = 'none';
+      ph.style.display = 'flex';
+      delBtn.style.display = 'none';
+      document.getElementById(`file-${side}`).value = '';
+    }
+
+    // Восстановление фотографий при перезагрузке страницы / запуске PWA
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedFront = localStorage.getItem('doc_img_front');
+      const savedBack = localStorage.getItem('doc_img_back');
+
+      if (savedFront) displayImage('front', savedFront);
+      if (savedBack) displayImage('back', savedBack);
+    });
 
     // Копирование
     function copyValue(id) {
